@@ -8,8 +8,8 @@ class Cell {
 
     static setCellPrototypeFuncsFor(cellSize) {
         Cell.prototype.size = cellSize
-        Cell.prototype.getAnchorX = function() { return this.x * cellSize }
-        Cell.prototype.getAnchorY = function() { return this.y * cellSize }
+        Cell.prototype.getAnchorX = function() { return this.x * cellSize + border }
+        Cell.prototype.getAnchorY = function() { return this.y * cellSize + border }
         Cell.prototype.draw = function(color, cornerR) {
             fill(color)
             strokeWeight(0)
@@ -97,8 +97,8 @@ Cell.prototype.hashKey = function() {
 class Game {
 
     constructor(width, height, cellSize) {
-        this.slowFps = 4;
-        this.fastFps = 8
+        this.baseSpeed = 4
+        this.speedScalar = 1
         this.isSlow = true
         this.width = width;
         this.height = height;
@@ -120,7 +120,7 @@ class Game {
             strokeWeight(3)
             stroke(0)
             textSize(24)
-            text(`You got Schnekk'd !!   Score: ` + this.getScore(), 32, 190)
+            text(`You got Schnekk'd !!   Score: ` + this.score, 32, 190)
         }
 
         let speedX = 16
@@ -131,7 +131,13 @@ class Game {
             strokeWeight(3)
             stroke(0)
             textSize(16)
-            text(this.isSlow ? "slow" : "fast", speedX, speedY) 
+
+            switch(this.speedScalar) {
+                case 1:  text("slow",  speedX, speedY); break;
+                case 2:  text("fast",  speedX, speedY); break;
+                case 3:  text("turbo", speedX, speedY); break;
+                default: text("??", speedX, speedY);
+            }
         }
     }
 
@@ -161,7 +167,7 @@ class Game {
        
     }
 
-    getFps() { return this.isSlow ? this.slowFps : this.fastFps }
+    getFps() { return this.baseSpeed * this.speedScalar }
 
     setPause(bool) {
         this.isPaused = bool
@@ -177,8 +183,6 @@ class Game {
     getRandomOpenCell() {
         return this.openSpacesDict[random(Object.keys(this.openSpacesDict))]
     }
-    
-    getScore() { return this.snake.body.length }
 
     input(keyCode) {
         if (this.isPaused) return
@@ -223,7 +227,7 @@ class Game {
         }
 
         if (this.apple.equalTo(newHead)) {
-            this.score++
+            this.score += this.speedScalar
             this.snake.eatenAppleDict[newHead.hashKey()] = newHead
             this.apple = this.getRandomOpenCell()
             this.justAte = true
@@ -246,8 +250,8 @@ class Game {
         }
     }
 
-    setSlow(isSlow) {
-        this.isSlow = isSlow
+    setSpeedScalar(scalar) {
+        this.speedScalar = scalar
         frameRate(this.getFps())
     }
     
@@ -261,7 +265,7 @@ class Game {
                               return EyeDrawer.drawOpenEye(head, this.dir) 
         })()
 
-        this.snake.draw(color('#0f0'), this.justAte, drawEye)
+        this.snake.draw(color('#0f0'), drawEye)
         this.apple.draw(color('red'))
         this.drawScore()
         this.drawSpeed()
@@ -281,9 +285,10 @@ class Snake {
     pushHead(cell) { this.body.unshift(cell) }
     pushTail(cell) { this.body.push(cell) }
     popTail() { return this.body.pop() }
-    draw(snakeColor, justAte, drawEye) {
+    draw(snakeColor, drawEye) {
         for (const cell of this.body) { cell.draw(snakeColor) }
         for (const key in this.eatenAppleDict) {
+            console.log("ping")
             this.eatenAppleDict[key].draw(color('#0c0'))
         }
         drawEye()
@@ -296,16 +301,18 @@ class Snake {
 // ===================
 let game;
 let keyPressDict = {}
+let border = 2;
 
 function setup() {
 
     // Add game state controls
-    keyPressDict[49] = () => game.setSlow(true)  // Type 1 for slow mode
-    keyPressDict[50] = () => game.setSlow(false)  // Type 2 for fast mode
+    keyPressDict[49] = () => game.setSpeedScalar(1)  // Type 1 for slow mode
+    keyPressDict[50] = () => game.setSpeedScalar(2)  // Type 2 for fast mode
+    keyPressDict[51] = () => game.setSpeedScalar(3)  // Type 3 for turbo mode
     keyPressDict[32] = () => game.togglePause(false) // Type SPACE to toggle pause
     keyPressDict[13] = () => game.reset()  // Enter to reset (and unpause)
 
-    createCanvas(400, 400);
+    createCanvas(404, 404);
     let canvasDim = 400;
 
     background(10);
@@ -320,6 +327,11 @@ function setup() {
 
 function draw() {
     background(10);
+    strokeWeight(2);
+    noFill()
+    stroke(color('#bbb'))
+    rect(2, 2, 400, 400)
+    //TODO: Fix border
     game.draw()
 }
 
