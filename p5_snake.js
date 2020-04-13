@@ -284,14 +284,7 @@ class Snake {
     draw(snakeColor, justAte, drawEye) {
         for (const cell of this.body) { cell.draw(snakeColor) }
         for (const key in this.eatenAppleDict) {
-            print(key)
-            const cell = this.eatenAppleDict[key]
-            let anchorX = cell.getAnchorX() - 2
-            let anchorY = cell.getAnchorY() - 2
-            fill(snakeColor)
-            strokeWeight(0)
-            let size = cell.size + 4
-            rect(anchorX, anchorY, size, size)
+            this.eatenAppleDict[key].draw(color('#0c0'))
         }
         drawEye()
     }
