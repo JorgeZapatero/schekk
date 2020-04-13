@@ -1,3 +1,5 @@
+//TODO: how can apple appear behind the head?
+
 class Cell {
     constructor(x, y) {
         this.x = x;
@@ -83,7 +85,7 @@ class EyeDrawer {
     }
 }
 
-Cell.prototype.compare = function(that) {
+Cell.prototype.equalTo = function(that) {
     return this.x === that.x && this.y === that.y
 }
 
@@ -93,8 +95,6 @@ Cell.prototype.hashKey = function() {
 
 
 class Game {
-
-
 
     constructor(width, height, cellSize) {
         this.slowFps = 4;
@@ -112,7 +112,7 @@ class Game {
             strokeWeight(3)
             stroke(0)
             textSize(16)
-            text(this.getScore(), scoreX, scoreY); 
+            text(this.score, scoreX, scoreY); 
         }
 
         this.drawGameOver = function() {
@@ -126,7 +126,7 @@ class Game {
         let speedX = 16
         let speedY = height * cellSize - 24
 
-        this.drawDifficulty = function() {
+        this.drawSpeed = function() {
             fill(color("yellow"))
             strokeWeight(3)
             stroke(0)
@@ -138,12 +138,12 @@ class Game {
     reset() {
         this.setPause(false)
         this.isOver = false
+        this.score = 0
         this.snake = new Snake(new Cell(1,9))
         this.snake.pushHead(new Cell(2,9))
         this.dir = 2
         this.nextDir = this.dir
         this.apple = new Cell(12,9)
-        this.justAte = false
         this.resetOpenSpacesDict(this.snake.body)
     }
 
@@ -185,6 +185,10 @@ class Game {
         if (keyCode < LEFT_ARROW || keyCode > DOWN_ARROW) { return }
         this.nextDir = keyCode - 37
     }
+
+    onEatApple() {
+        
+    }
     
     step() {
 
@@ -212,23 +216,34 @@ class Game {
         }
 
         for (const cell of this.snake.body) {
-            if (cell.compare(newHead)) {
+            if (cell.equalTo(newHead)) {
                 this.isOver = true
                 return
             }
         }
 
-        if (this.apple.compare(newHead)) {
-            this.justAte = true
+        if (this.apple.equalTo(newHead)) {
+            this.score++
+            this.snake.eatenAppleDict[newHead.hashKey()] = newHead
             this.apple = this.getRandomOpenCell()
+            this.justAte = true
         } else {
             this.justAte = false
-            const oldTail = this.snake.popTail()
-            this.openSpacesDict[oldTail.hashKey()] = oldTail // +1 for dict
         }
+
+        const oldTail = this.snake.popTail()
+        this.openSpacesDict[oldTail.hashKey()] = oldTail // +1 for dict
     
         this.snake.pushHead(newHead)
         delete this.openSpacesDict[newHead.hashKey()] // -1 for dict
+
+        for (const key in this.snake.eatenAppleDict) {
+            const openCell = this.openSpacesDict[key]
+            if (openCell) {
+                this.snake.pushTail(openCell)
+                delete this.snake.eatenAppleDict[key]
+            }
+        }
     }
 
     setSlow(isSlow) {
@@ -247,36 +262,36 @@ class Game {
         })()
 
         this.snake.draw(color('#0f0'), this.justAte, drawEye)
-        this.apple.draw(color('red'), 5)
+        this.apple.draw(color('red'))
         this.drawScore()
-        this.drawDifficulty()
+        this.drawSpeed()
         if (this.isOver) this.drawGameOver()
     }
 }
 
 
 class Snake {
-
     constructor(initialCell) {
         this.body = [initialCell]
         this.eatenAppleDict = {}
     }
+
     getHead() { return this.body[0] }
     getTail() { return this.body[this.body.length - 1] }
-    pushHead(cell) {
-        this.body.unshift(cell)
-    }
+    pushHead(cell) { this.body.unshift(cell) }
+    pushTail(cell) { this.body.push(cell) }
     popTail() { return this.body.pop() }
     draw(snakeColor, justAte, drawEye) {
         for (const cell of this.body) { cell.draw(snakeColor) }
-        if (justAte) {
-            let head = this.getHead()
-            let anchorX = head.getAnchorX() - 1.5
-            let anchorY = head.getAnchorY() - 1.5
+        for (const key in this.eatenAppleDict) {
+            print(key)
+            const cell = this.eatenAppleDict[key]
+            let anchorX = cell.getAnchorX() - 2
+            let anchorY = cell.getAnchorY() - 2
             fill(snakeColor)
             strokeWeight(0)
-            let size = head.size + 3
-            rect(anchorX, anchorY, size, size, 6)
+            let size = cell.size + 4
+            rect(anchorX, anchorY, size, size)
         }
         drawEye()
     }
