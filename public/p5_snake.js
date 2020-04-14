@@ -125,7 +125,7 @@ Cell.prototype.hashKey = function() {
 class Game {
 
     constructor(width, height, cellSize) {
-        this.baseSpeed = 4
+        this.baseSpeed = 5
         this.speedScalar = 1
         this.isSlow = true
         this.width = width;
@@ -163,12 +163,7 @@ class Game {
             stroke(0)
             textSize(16)
 
-            switch(this.speedScalar) {
-                case 1:  text("slow x1",  speedX, speedY); break;
-                case 2:  text("fast x2",  speedX, speedY); break;
-                case 3:  text("turbo x3", speedX, speedY); break;
-                default: text("??", speedX, speedY);
-            }
+            text(`x${this.speedScalar}`, speedX, speedY)
         }
     }
 
