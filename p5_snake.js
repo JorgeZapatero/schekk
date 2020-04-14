@@ -36,10 +36,10 @@ class EyeDrawer {
             y = cell.getAnchorY() + halfSize/4 + halfSize/2
 
             switch (dir) {
-                case 0: x-=2; break;
-                case 1: y-=2; break;
-                case 2: x+=2; break;
-                case 3: y+=2;
+                case 0: x-=3; break;
+                case 1: y-=3; break;
+                case 2: x+=3; break;
+                case 3: y+=3;
             }
 
             rect(x, y, halfSize/2, halfSize/2)
@@ -136,7 +136,7 @@ class Game {
         const scoreY = height * cellSize - 22;
 
         this.drawScore = function() {
-            fill(color("yellow"))
+            fill(color('#dd0'))
             strokeWeight(3)
             stroke(0)
             textSize(16)
@@ -144,7 +144,7 @@ class Game {
         }
 
         this.drawGameOver = function() {
-            fill(color("yellow"))
+            fill(color("#dd0"))
             strokeWeight(3)
             stroke(0)
             textSize(24)
@@ -158,7 +158,7 @@ class Game {
         let speedY = height * cellSize - 22
 
         this.drawSpeed = function() {
-            fill(color("yellow"))
+            fill(color("#dd0"))
             strokeWeight(3)
             stroke(0)
             textSize(16)
@@ -297,8 +297,8 @@ class Game {
                               return EyeDrawer.drawSquareEye(head, this.dir)
         })()
 
-        this.snake.draw(color('#0f0'), drawEye)
-        this.apple.draw(color('red'))
+        this.snake.draw(color('#0b0'), drawEye)
+        this.apple.draw(color('#e00'))
         this.drawScore()
         this.drawSpeed()
         if (this.isOver) this.drawGameOver()
@@ -320,7 +320,7 @@ class Snake {
     draw(snakeColor, drawEye) {
         for (const cell of this.body) { cell.draw(snakeColor) }
         for (const key in this.eatenAppleDict) {
-            this.eatenAppleDict[key].draw(color('#0c0'))
+            this.eatenAppleDict[key].draw(color('#080'))
         }
         drawEye()
     }
@@ -332,7 +332,6 @@ class Snake {
 // ===================
 let game;
 let keyPressDict = {}
-let border = 2;
 
 function setup() {
 
@@ -361,9 +360,8 @@ function draw() {
     background(10);
     strokeWeight(8);
     noFill()
-    stroke(color('#bbb'))
+    stroke(color('#777'))
     rect(4, 4, 408, 408)
-    //TODO: Fix border
     game.draw()
 }
 
