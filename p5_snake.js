@@ -19,35 +19,63 @@ class Cell {
 }
 
 class EyeDrawer {
+    static drawSquareEye(cell, dir) {
+        return () => { 
+            const halfSize = cell.size/2
+            let x = cell.getAnchorX() + halfSize/2
+            let y = cell.getAnchorY() + halfSize/2
+
+            fill(color('white')) 
+            noStroke()
+            //stroke(color('black'))
+            //strokeWeight(0.2)
+            rect(x,y, halfSize, halfSize)
+
+            fill(color('black'))
+            x = cell.getAnchorX() + halfSize/4 + halfSize/2
+            y = cell.getAnchorY() + halfSize/4 + halfSize/2
+
+            switch (dir) {
+                case 0: x-=2; break;
+                case 1: y-=2; break;
+                case 2: x+=2; break;
+                case 3: y+=2;
+            }
+
+            rect(x, y, halfSize/2, halfSize/2)
+
+
+        }
+    }
     static drawOpenEye(cell, dir) {
         return () => {
             const halfSize = cell.size/2
-            let centerX = cell.getAnchorX() + halfSize 
-            let centerY = cell.getAnchorY() + halfSize 
+            let x = cell.getAnchorX() + halfSize 
+            let y = cell.getAnchorY() + halfSize 
     
             stroke(color('black'))
             strokeWeight(0.2)
             fill(color('white'))
             
-            ellipse(centerX, centerY, halfSize, halfSize)
+            ellipse(x, y, halfSize, halfSize)
 
             switch (dir) {
-                case 0: centerX-=2; break;
-                case 1: centerY-=2; break;
-                case 2: centerX+=2; break;
-                case 3: centerY+=2;
+                case 0: x-=2; break;
+                case 1: y-=2; break;
+                case 2: x+=2; break;
+                case 3: y+=2;
             }
 
             stroke(color('black'))
             fill(color('black'))
-            ellipse(centerX, centerY, 4, 4)
+            ellipse(x, y, 4, 4)
         }
     }
 
     static drawClosedEye(cell, dir) {
         return () => {
             const halfSize = cell.size/2
-            let centerX = cell.getAnchorX() + halfSize 
+            let centerX = cell.getAnchorX() + halfSize
             let centerY = cell.getAnchorY() + halfSize 
     
             stroke(color('black')) 
@@ -57,12 +85,12 @@ class EyeDrawer {
             let y2 = centerY
     
             switch (dir) {
-                case 0: case 2: x1-=3; x2+=3; break;
-                case 1: case 3: y1-=3; y2+=3;
+                case 0: case 2: x1-=3.5; x2+=3.5; break;
+                case 1: case 3: y1-=3.5; y2+=3.5;
             }
     
             stroke(color('black'))
-            strokeWeight(1.5)
+            strokeWeight(1.8)
             line(x1, y1, x2, y2)
 
             strokeWeight(0)
@@ -265,7 +293,8 @@ class Game {
         let drawEye = (() => {
             if (this.isOver)  return EyeDrawer.drawDeadEye(head)
             if (this.justAte) return EyeDrawer.drawClosedEye(head, this.dir)
-                              return EyeDrawer.drawOpenEye(head, this.dir) 
+                              //return EyeDrawer.drawOpenEye(head, this.dir) 
+                              return EyeDrawer.drawSquareEye(head, this.dir)
         })()
 
         this.snake.draw(color('#0f0'), drawEye)
