@@ -6,10 +6,10 @@ class Cell {
         this.y = y;
     }
 
-    static setCellPrototypeFuncsFor(cellSize) {
+    static setCellPrototypeFuncsFor(cellSize, canvasOffset) {
         Cell.prototype.size = cellSize
-        Cell.prototype.getAnchorX = function() { return this.x * cellSize + border }
-        Cell.prototype.getAnchorY = function() { return this.y * cellSize + border }
+        Cell.prototype.getAnchorX = function() { return this.x * cellSize + canvasOffset }
+        Cell.prototype.getAnchorY = function() { return this.y * cellSize + canvasOffset }
         Cell.prototype.draw = function(color, cornerR) {
             fill(color)
             strokeWeight(0)
@@ -105,7 +105,7 @@ class Game {
         this.reset();
 
         const scoreX =  width * cellSize - 34;
-        const scoreY = height * cellSize - 24;
+        const scoreY = height * cellSize - 22;
 
         this.drawScore = function() {
             fill(color("yellow"))
@@ -126,8 +126,8 @@ class Game {
 
         }
 
-        let speedX = 16
-        let speedY = height * cellSize - 24
+        let speedX = 30
+        let speedY = height * cellSize - 22
 
         this.drawSpeed = function() {
             fill(color("yellow"))
@@ -314,7 +314,8 @@ function setup() {
     keyPressDict[32] = () => game.togglePause(false) // Type SPACE to toggle pause
     keyPressDict[13] = () => game.reset()  // Enter to reset (and unpause)
 
-    createCanvas(404, 404);
+    createCanvas(416, 416);
+    let canvasOffset = 8
     let canvasDim = 400;
 
     background(10);
@@ -322,17 +323,17 @@ function setup() {
     let cellSize = 20
     let gameDim = floor(canvasDim/cellSize)
     game = new Game(gameDim, gameDim, cellSize)
-    Cell.setCellPrototypeFuncsFor(cellSize)
+    Cell.setCellPrototypeFuncsFor(cellSize, canvasOffset)
 
     frameRate(game.getFps()); 
 }
 
 function draw() {
     background(10);
-    strokeWeight(2);
+    strokeWeight(8);
     noFill()
     stroke(color('#bbb'))
-    rect(2, 2, 400, 400)
+    rect(4, 4, 408, 408)
     //TODO: Fix border
     game.draw()
 }
