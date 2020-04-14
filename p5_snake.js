@@ -120,7 +120,10 @@ class Game {
             strokeWeight(3)
             stroke(0)
             textSize(24)
-            text(`You got Schnekk'd !!   Score: ` + this.score, 32, 190)
+            text(`You got Schnekk'd !!`, 100, 190)
+            text('Score: ' + this.score, 170, 230)
+            text('Length: ' + this.snake.body.length, 165, 270)
+
         }
 
         let speedX = 16
@@ -133,9 +136,9 @@ class Game {
             textSize(16)
 
             switch(this.speedScalar) {
-                case 1:  text("slow",  speedX, speedY); break;
-                case 2:  text("fast",  speedX, speedY); break;
-                case 3:  text("turbo", speedX, speedY); break;
+                case 1:  text("slow x1",  speedX, speedY); break;
+                case 2:  text("fast x2",  speedX, speedY); break;
+                case 3:  text("turbo x3", speedX, speedY); break;
                 default: text("??", speedX, speedY);
             }
         }
@@ -288,7 +291,6 @@ class Snake {
     draw(snakeColor, drawEye) {
         for (const cell of this.body) { cell.draw(snakeColor) }
         for (const key in this.eatenAppleDict) {
-            console.log("ping")
             this.eatenAppleDict[key].draw(color('#0c0'))
         }
         drawEye()
