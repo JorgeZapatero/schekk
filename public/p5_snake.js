@@ -132,7 +132,7 @@ class Game {
         this.height = height;
         this.reset();
 
-        const scoreX =  width * cellSize - 34;
+        const scoreX =  width * cellSize - 40;
         const scoreY = height * cellSize - 22;
 
         this.drawScore = function() {
@@ -253,7 +253,7 @@ class Game {
         }
 
         if (this.apple.equalTo(newHead)) {
-            this.score += this.speedScalar
+            this.score += this.speedScalar*10
             this.snake.eatenAppleDict[newHead.hashKey()] = newHead
             this.apple = this.getRandomOpenCell()
             this.justAte = true
@@ -264,6 +264,8 @@ class Game {
         const oldTail = this.snake.popTail()
         this.openSpacesDict[oldTail.hashKey()] = oldTail // +1 for dict
     
+
+
         this.snake.pushHead(newHead)
         delete this.openSpacesDict[newHead.hashKey()] // -1 for dict
 
@@ -329,17 +331,11 @@ let game;
 let keyPressDict = {}
 
 function setup() {
-
-    // Add game state controls
-    keyPressDict[49] = () => game.setSpeedScalar(1)  // Type 1 for slow mode
-    keyPressDict[50] = () => game.setSpeedScalar(2)  // Type 2 for fast mode
-    keyPressDict[51] = () => game.setSpeedScalar(3)  // Type 3 for turbo mode
-    keyPressDict[32] = () => game.togglePause(false) // Type SPACE to toggle pause
-    keyPressDict[13] = () => game.reset()  // Enter to reset (and unpause)
-
-    createCanvas(416, 416);
+    
+    const canvas = createCanvas(416, 416);
     let canvasOffset = 8
     let canvasDim = 400;
+    canvas.parent('sketch-holder')
 
     background(10);
 
@@ -349,6 +345,14 @@ function setup() {
     Cell.setCellPrototypeFuncsFor(cellSize, canvasOffset)
 
     frameRate(game.getFps()); 
+
+    // Add game state controls
+    keyPressDict[49] = () => game.setSpeedScalar(1)  // Type 1 for slow mode
+    keyPressDict[50] = () => game.setSpeedScalar(2)  // Type 2 for fast mode
+    keyPressDict[51] = () => game.setSpeedScalar(3)  // Type 3 for turbo mode
+    keyPressDict[32] = () => game.togglePause(false) // Type SPACE to toggle pause
+    keyPressDict[13] = () => game.reset()  // Enter to reset (and unpause)
+
 }
 
 function draw() {
