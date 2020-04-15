@@ -9,8 +9,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "HOST=54.184.235.203 PORT=3000 node app.js",
-    "develop": "node app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
