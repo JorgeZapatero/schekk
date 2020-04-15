@@ -43,8 +43,6 @@ class EyeDrawer {
             }
 
             rect(x, y, halfSize/2, halfSize/2)
-
-
         }
     }
     static drawOpenEye(cell, dir) {
@@ -245,6 +243,7 @@ class Game {
             return
         }
 
+        // check newHead for body collision
         for (const cell of this.snake.body) {
             if (cell.equalTo(newHead)) {
                 this.isOver = true
@@ -252,6 +251,22 @@ class Game {
             }
         }
 
+        const oldTail = this.snake.popTail()
+        this.openSpacesDict[oldTail.hashKey()] = oldTail
+    
+        this.snake.pushHead(newHead)
+        delete this.openSpacesDict[newHead.hashKey()]
+
+        // check for growth
+        for (const key in this.snake.eatenAppleDict) {
+            const openCell = this.openSpacesDict[key]
+            if (openCell) {
+                this.snake.pushTail(openCell)
+                delete this.snake.eatenAppleDict[key]
+            }
+        }
+
+        // check for eaten apple
         if (this.apple.equalTo(newHead)) {
             this.score += this.speedScalar*10
             this.snake.eatenAppleDict[newHead.hashKey()] = newHead
@@ -259,22 +274,6 @@ class Game {
             this.justAte = true
         } else {
             this.justAte = false
-        }
-
-        const oldTail = this.snake.popTail()
-        this.openSpacesDict[oldTail.hashKey()] = oldTail // +1 for dict
-    
-
-
-        this.snake.pushHead(newHead)
-        delete this.openSpacesDict[newHead.hashKey()] // -1 for dict
-
-        for (const key in this.snake.eatenAppleDict) {
-            const openCell = this.openSpacesDict[key]
-            if (openCell) {
-                this.snake.pushTail(openCell)
-                delete this.snake.eatenAppleDict[key]
-            }
         }
     }
 
@@ -290,7 +289,6 @@ class Game {
         let drawEye = (() => {
             if (this.isOver)  return EyeDrawer.drawDeadEye(head)
             if (this.justAte) return EyeDrawer.drawClosedEye(head, this.dir)
-                              //return EyeDrawer.drawOpenEye(head, this.dir) 
                               return EyeDrawer.drawSquareEye(head, this.dir)
         })()
 
