@@ -1,4 +1,6 @@
-//TODO: how can apple appear behind the head?
+// George Shoemaker
+// Schnekk
+// April 2020, covid-19 lockdown
 
 class Cell {
     constructor(x, y) {
