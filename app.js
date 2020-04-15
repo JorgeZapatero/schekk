@@ -1,7 +1,7 @@
 const express = require('express')
 
-const hostname = "127.0.0.1"
-const port = 3000
+const hostname = process.env.HOST ? process.env.HOST : "127.0.0.1"
+const port     = process.env.PORT ? process.env.PORT : "3000"
 const rootUrl = `http://${hostname}:${port}/`
 
 const app = express()

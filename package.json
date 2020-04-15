@@ -1,0 +1,26 @@
+{
+  "name": "schnekk",
+  "version": "1.0.0",
+  "description": "A snake game in p5.js",
+  "main": "app.js",
+  "dependencies": {
+    "ejs": "^3.0.2",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "HOST=54.184.235.203 PORT=3000 node app.js",
+    "develop": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JorgeZapatero/schnekk.git"
+  },
+  "author": "George Shoemaker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JorgeZapatero/schnekk/issues"
+  },
+  "homepage": "https://github.com/JorgeZapatero/schnekk#readme"
+}
