@@ -8,7 +8,7 @@ const connect = (filename) => new Promise( (resolve, reject) => {
 })
 
 const initDb = (filename) => new Promise( (resolve, reject) => {
-    let db = new sqlite3.Database(filename, sqlite3.OPEN_CREATE, err => {
+    let db = new sqlite3.Database(filename, err => {
         if (err) reject(err)
         resolve(db)
     })
@@ -25,9 +25,6 @@ module.exports = {
     disconnect
 }
 
-
-
-connect('tark')
-.catch(catchMissingDb)
-.then(disconnect)
-.catch(err => console.log(err.message))
+// connect('tark')
+// .then(disconnect)
+// .catch(err => console.log(err.message))
