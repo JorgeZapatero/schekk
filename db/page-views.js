@@ -14,19 +14,17 @@ const getViews = async (page) => {
     let db = await dbManager.connect(dbFile)
     return new Promise((resolve, reject) => {
         db.all(`SELECT ${columns[1]} FROM ${table} WHERE ${columns[0]} = '${page}';`, (err, rows) => {
-            
-            if (err) { console.log(err.message); return reject(err)}
-            resolve( rows[0] ? rows[0].hits : null)
+            if (err) return reject(err)
+            resolve( rows[0] ? rows[0][columns[1]] : null)
         })
         db.close()
     })
 }
 
-// If the page does not exist, add it
 const increment = async (page) => {
     let views = await getViews(page)
-    console.log("views: " + views)
     if (views == null) return await addPage(page)
+
     let db = await dbManager.initDb(dbFile)
     return new Promise((resolve, reject) => {
         db.all(`UPDATE ${table} SET ${columns[1]}=${views+1} WHERE ${columns[0]} = '${page}'`, err => {
