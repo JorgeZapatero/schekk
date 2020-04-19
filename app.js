@@ -1,17 +1,18 @@
-require('dotenv').config()
-const pageHits = require('./db/page-hits')
-const express = require('express')
+require('dotenv').config();
+const pageHits = require('./db/page-hits');
+const express = require('express');
 
-pageHits.setupPageHits()
-.then(res => pageHits.addPage('schnekk'))
-.then(res => pageHits.getPageHits('schnekk'))
-.then(res => console.log("final res: " + res))
+const schnekkPage = 'schnekk';
 
-// check db exists
-    // if not, set it up
-
-// increment and fetch the page count
-
+(async () => {
+    try {
+        await pageHits.setupPageHitsDb()
+        let schnekkHits = await pageHits.incrementPageHits(schnekkPage)
+        console.log(schnekkHits)
+    } catch (err) {
+        console.error(err.message)
+    }
+})()
 
 // const hostname = process.env.HOST ? process.env.HOST : "127.0.0.1"
 // const port     = process.env.PORT ? process.env.PORT : "3000"

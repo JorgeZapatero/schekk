@@ -1,15 +1,14 @@
-const db = require('./db')
+const db = require('./db-manager')
 
 const pageHitsFile = `${__dirname}/page-hits.db`
 const table = 'hits'
 const columns = ['page','hits']
 
-const setupPageHits = async () => {
+const setupPageHitsDb = async () => {
     try {
         let pageHitsDb = await db.initDb(pageHitsFile)
         pageHitsDb.run(`CREATE TABLE IF NOT EXISTS ${table} (${columns[0]} TEXT PRIMARY KEY, ${columns[1]} INTEGER NOT NULL);`);
         pageHitsDb.close()
-        console.log("Setup page hits.")
     }
     catch(err) {
         console.error(err.message)
@@ -20,27 +19,57 @@ const setupPageHits = async () => {
 const getPageHits = async (page) => {
     try {
         let pageHitsDb = await db.initDb(pageHitsFile)
-        pageHitsDb.all(`SELECT ${columns[1]} FROM ${table} WHERE ${columns[0]} = '${page}';`, (err, rows) => {
-            console.log("Result: " + rows)
-            return rows[0][0]
+        return new Promise((resolve, reject) => {
+            pageHitsDb.all(`SELECT ${columns[1]} FROM ${table} WHERE ${columns[0]} = '${page}';`, (err, rows) => {
+                if (err) return reject(err)
+                resolve( rows[0] ? rows[0].hits : null)
+            })
+            pageHitsDb.close()
         })
-        pageHitsDb.close()
     } catch (err) {
         console.error(err)
         return null
     }
 }
 
+
+// If the page does not exist, add it
+const incrementPageHits = async (page) => {
+    try {
+        let pageHits = await getPageHits(page)
+        if (pageHits == null) return await addPage(page)
+
+        let pageHitsDb = await db.initDb(pageHitsFile)
+        return new Promise((resolve, reject) => {
+            pageHitsDb.all(`UPDATE ${table} SET ${columns[1]}=${pageHits+1} WHERE ${columns[0]} = '${page}'`, err => {
+                if (err) return reject(err)
+                resolve(pageHits+1)
+            })
+            pageHitsDb.close()
+        })
+    } catch (error) {
+        console.error(err)
+        return null
+    }
+}
+
 const addPage = async (page) => {
+    const defaultHitCount = 1
     let pageHitsDb = await db.initDb(pageHitsFile)
-    pageHitsDb.all(`INSERT INTO ${table} VALUES ('${page}', 0)`, (err, rows) => {})
-    pageHitsDb.close()
+    return new Promise((resolve, reject) => {
+        pageHitsDb.all(`INSERT INTO ${table} VALUES ('${page}', 1)`, err => {
+            if (err) return reject(err)
+            resolve(defaultHitCount)
+        })
+        pageHitsDb.close()
+    })
 }
  
 module.exports = {
-    setupPageHits,
+    setupPageHitsDb,
     addPage,
-    getPageHits
+    getPageHits,
+    incrementPageHits
 }
 
 // import db.js
